@@ -1,0 +1,10 @@
+{
+	"ImportPath": "github.com/ruiaaperes/octify",
+	"GoVersion": "go1.3.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/zenazn/goji",
+			"Rev": "9e8d33cb030a55965ec27ec020943ba07e359853"
+		}
+	]
+}

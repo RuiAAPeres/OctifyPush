@@ -15,10 +15,10 @@ func main() {
 
 	controller, error := controller.NewController()
 	if error != nil {
-		  log.Fatal(error)
+		log.Fatal(error)
 	}
 
-    defer controller.CloseSession()
+	defer controller.CloseSession()
 
 	goji.Post(userURLPath, controller.RegisterUser)
 	goji.Get(userURLPath, controller.RegisteredUser)

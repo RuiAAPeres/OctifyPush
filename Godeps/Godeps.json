@@ -5,6 +5,10 @@
 		{
 			"ImportPath": "github.com/zenazn/goji",
 			"Rev": "9e8d33cb030a55965ec27ec020943ba07e359853"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2",
+			"Rev": "c9fd3712fbf3e92924c974dce16da2d322508fe2"
 		}
 	]
 }

@@ -5,6 +5,8 @@ import (
     "net/http"
  	"fmt"
 
+    //"github.com/ruiaaperes/octify/model"
+
 	"gopkg.in/mgo.v2"
     "github.com/zenazn/goji/web"
 )
@@ -19,7 +21,9 @@ type Controller struct {
 
 func NewController() (*Controller, error) {
 
-    uri := os.Getenv(mongoURL)
+    uri := os.Getenv("MONGOHQ_URL")
+    fmt.Errorf(uri)
+
     if uri == "" {
         return nil, fmt.Errorf("no DB connection string provided")
     }
@@ -43,14 +47,14 @@ func (controller *Controller) CloseSession() {
 
 // HTTP Handlers
 
-func (controller *Controller) PostUser(c web.C, w http.ResponseWriter, r *http.Request) {
+func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (controller *Controller) GetUser(c web.C, w http.ResponseWriter, r *http.Request) {
+func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (controller *Controller) DeleteUser(c web.C, w http.ResponseWriter, r *http.Request) {
+func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
 
 }

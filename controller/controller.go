@@ -1,4 +1,4 @@
-package db
+package controller
 
 import (
 	"os"
@@ -35,9 +35,13 @@ func NewController() (*Controller, error) {
     }, nil
 }
 
+// Close Session
+
 func (controller *Controller) CloseSession() {
     controller.session.Close()
 }
+
+// HTTP Handlers
 
 func (controller *Controller) PostUser(c web.C, w http.ResponseWriter, r *http.Request) {
 

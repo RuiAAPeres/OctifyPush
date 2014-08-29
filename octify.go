@@ -3,12 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/ruiaaperes/octify/db"
-
+	"github.com/ruiaaperes/octify/controller"
 	"github.com/zenazn/goji"
 )
-
-// HTTP Handlers
 
 const (
 	userURLPath = "/user"
@@ -16,7 +13,7 @@ const (
 
 func main() {
 
-	controller, error := db.NewController()
+	controller, error := controller.NewController()
 	if error != nil {
 		  log.Fatal(error)
 	}

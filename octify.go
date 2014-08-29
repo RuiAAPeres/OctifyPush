@@ -9,23 +9,18 @@ import (
 )
 
 const (
-	userURLPath = "/user"
+	userURLPath = "/v1/user"
 )
 
 func main() {
-
-    fmt.Println("Listenasasddasing...")
 
 	controller, error := controller.NewController()
 	if error != nil {
 		  log.Fatal(error)
 	}
-    fmt.Println("asd...")
 
     defer controller.CloseSession()
 
-
-    fmt.Println("Listening...")
 	goji.Post(userURLPath, controller.RegisterUser)
 	goji.Get(userURLPath, controller.RegisteredUser)
 	goji.Delete(userURLPath, controller.UnregisterUser)

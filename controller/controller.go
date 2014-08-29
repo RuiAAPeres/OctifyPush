@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"os"
+	//"os"
     "net/http"
  	"fmt"
 
@@ -35,7 +35,7 @@ func NewController() (*Controller, error) {
     session.SetMode(mgo.Monotonic, true)
 
     return &Controller{
-        session: session,
+        session: nil,
     }, nil
 }
 
@@ -48,13 +48,13 @@ func (controller *Controller) CloseSession() {
 // HTTP Handlers
 
 func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
-
+    fmt.Println(w,"Done Post")
 }
 
 func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
-
+    fmt.Println(w,"Done Get")
 }
 
 func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
-
+    fmt.Println(w,"Done Delete")
 }

@@ -2,9 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
-	//	"os"
+	"os"
 
 	"github.com/ruiaaperes/octify/model"
 
@@ -13,7 +14,9 @@ import (
 )
 
 const (
-	mongoURL = "MONGOHQ_URL"
+	mongoURL        = "MONGOHQ_URL"
+	octifyDB        = "octify"
+	usersCollection = "users"
 )
 
 type Controller struct {
@@ -22,21 +25,21 @@ type Controller struct {
 
 func NewController() (*Controller, error) {
 
-	// uri := os.Getenv("MONGOHQ_URL")
-	// fmt.Errorf(uri)
+	uri := os.Getenv("MONGOHQ_URL")
+	fmt.Errorf(uri)
 
-	// if uri == "" {
-	// 	return nil, fmt.Errorf("no DB connection string provided")
-	// }
+	if uri == "" {
+		return nil, fmt.Errorf("no DB connection string provided")
+	}
 
-	// session, err := mgo.Dial(uri)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// session.SetMode(mgo.Monotonic, true)
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		return nil, err
+	}
+	session.SetMode(mgo.Monotonic, true)
 
 	return &Controller{
-		session: nil,
+		session: session,
 	}, nil
 }
 
@@ -55,6 +58,13 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 
 	if err != nil || user == (model.User{}) {
 		http.Error(w, "Bad content", http.StatusInternalServerError)
+	}
+
+	collection := controller.session.DB(octifyDB).C(usersCollection)
+	err = collection.Insert(&user)
+
+	if err != nil {
+		panic(err)
 	}
 
 	io.WriteString(w, "Done Post")

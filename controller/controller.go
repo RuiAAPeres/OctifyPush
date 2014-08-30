@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"fmt"
+	"encoding/json"
+	"io"
 	"net/http"
-	"os"
+	//	"os"
 
-	//"github.com/ruiaaperes/octify/model"
+	"github.com/ruiaaperes/octify/model"
 
 	"github.com/zenazn/goji/web"
 	"gopkg.in/mgo.v2"
@@ -21,18 +22,18 @@ type Controller struct {
 
 func NewController() (*Controller, error) {
 
-	uri := os.Getenv("MONGOHQ_URL")
-	fmt.Errorf(uri)
+	// uri := os.Getenv("MONGOHQ_URL")
+	// fmt.Errorf(uri)
 
-	if uri == "" {
-		return nil, fmt.Errorf("no DB connection string provided")
-	}
+	// if uri == "" {
+	// 	return nil, fmt.Errorf("no DB connection string provided")
+	// }
 
-	session, err := mgo.Dial(uri)
-	if err != nil {
-		return nil, err
-	}
-	session.SetMode(mgo.Monotonic, true)
+	// session, err := mgo.Dial(uri)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// session.SetMode(mgo.Monotonic, true)
 
 	return &Controller{
 		session: nil,
@@ -48,13 +49,21 @@ func (controller *Controller) CloseSession() {
 // HTTP Handlers
 
 func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, "Done Post")
+	var user model.User
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&user)
+
+	if err != nil || user == (model.User{}) {
+		http.Error(w, "Bad content", http.StatusInternalServerError)
+	}
+
+	io.WriteString(w, "Done Post")
 }
 
 func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, "Done Get")
+	io.WriteString(w, "Done Get")
 }
 
 func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, "Done Delete")
+	io.WriteString(w, "Done Delete")
 }

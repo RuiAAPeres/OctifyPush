@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -38,6 +39,17 @@ func NewController() (*Controller, error) {
 	}
 	session.SetMode(mgo.Monotonic, true)
 
+	collection := session.DB(octifyDB).C(usersCollection)
+
+	index := mgo.Index{
+		Key:    []string{"username"},
+		Unique: true,
+	}
+	err = collection.EnsureIndex(index)
+	if err != nil {
+		log.Fatal("Uniqueness failure")
+	}
+
 	return &Controller{
 		session: session,
 	}, nil
@@ -64,7 +76,7 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 	err = collection.Insert(&user)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	io.WriteString(w, "Done Post")

@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	userURLPath = "/v1/user"
+	userURLPath     = "/v1/user"
+	userPlaceholder = "/:username"
 )
 
 func main() {
@@ -21,8 +22,8 @@ func main() {
 	defer controller.CloseSession()
 
 	goji.Post(userURLPath, controller.RegisterUser)
-	goji.Get(userURLPath, controller.RegisteredUser)
 	goji.Delete(userURLPath, controller.UnregisterUser)
+	goji.Get(userURLPath+userPlaceholder, controller.RegisteredUser)
 
 	goji.Serve()
 }

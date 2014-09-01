@@ -12,12 +12,14 @@ import (
 
 	"github.com/zenazn/goji/web"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
 	mongoURL        = "MONGOHQ_URL"
 	octifyDB        = "octify"
 	usersCollection = "users"
+	userPlaceholder = "username"
 )
 
 type Controller struct {
@@ -47,7 +49,7 @@ func NewController() (*Controller, error) {
 	}
 	err = collection.EnsureIndex(index)
 	if err != nil {
-		log.Fatal("Uniqueness failure")
+		log.Fatal(err)
 	}
 
 	return &Controller{
@@ -78,12 +80,22 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	io.WriteString(w, "Done Post")
 }
 
 func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Done Get")
+	var user model.User
+	collection := controller.session.DB(octifyDB).C(usersCollection)
+	username := c.URLParams[userPlaceholder]
+
+	err := collection.Find(bson.M{"username": username}).One(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(nil)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		enc := json.NewEncoder(w)
+		enc.Encode(user)
+	}
 }
 
 func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {

@@ -23,7 +23,7 @@ const (
 )
 
 type Controller struct {
-	session *mgo.Session
+	*mgo.Session
 }
 
 func NewController() (*Controller, error) {
@@ -53,14 +53,8 @@ func NewController() (*Controller, error) {
 	}
 
 	return &Controller{
-		session: session,
+		Session: session,
 	}, nil
-}
-
-// Close Session
-
-func (controller *Controller) CloseSession() {
-	controller.session.Close()
 }
 
 // HTTP Handlers
@@ -74,7 +68,7 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 		http.Error(w, "Bad content", http.StatusInternalServerError)
 	}
 
-	collection := controller.session.DB(octifyDB).C(usersCollection)
+	collection := controller.Session.DB(octifyDB).C(usersCollection)
 	err = collection.Insert(&user)
 
 	if err != nil {
@@ -84,7 +78,7 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 
 func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
 	var user model.User
-	collection := controller.session.DB(octifyDB).C(usersCollection)
+	collection := controller.Session.DB(octifyDB).C(usersCollection)
 	username := c.URLParams[userPlaceholder]
 
 	err := collection.Find(bson.M{"username": username}).One(&user)

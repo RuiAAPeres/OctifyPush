@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(error)
 	}
 
-	defer controller.CloseSession()
+	defer controller.Close()
 
 	goji.Post(userURLPath, controller.RegisterUser)
 	goji.Delete(userURLPath, controller.UnregisterUser)

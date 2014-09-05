@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -47,8 +46,8 @@ func NewController() (*Controller, error) {
 		Key:    []string{"username"},
 		Unique: true,
 	}
-	err = collection.EnsureIndex(index)
-	if err != nil {
+
+	if err = collection.EnsureIndex(index); err != nil {
 		log.Fatal(err)
 	}
 
@@ -65,32 +64,21 @@ func (controller *Controller) CloseSession() {
 
 // HTTP Handlers
 
+// POST
 func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&user)
 
-	if err != nil || user == (model.User{}) {
-		http.Error(w, "Bad content", http.StatusInternalServerError)
+	if err := decoder.Decode(&user); err != nil || user == (model.User{}) {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Bad Content"))
 	}
 
 	collection := controller.session.DB(octifyDB).C(usersCollection)
-	err = collection.Insert(&user)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	collection := controller.session.DB(octifyDB).C(usersCollection)
-	username := c.URLParams[userPlaceholder]
-
-	err := collection.Find(bson.M{"username": username}).One(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(nil)
+	if err := collection.Insert(&user); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 	} else {
 		w.WriteHeader(http.StatusOK)
 		enc := json.NewEncoder(w)
@@ -98,6 +86,35 @@ func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *
 	}
 }
 
+// GET
+func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *http.Request) {
+	var user model.User
+	collection := controller.session.DB(octifyDB).C(usersCollection)
+	username := c.URLParams[userPlaceholder]
+
+	if err := collection.Find(bson.M{"username": username}).One(&user); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		enc := json.NewEncoder(w)
+		enc.Encode(user)
+	}
+}
+
+// DELETE
 func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Done Delete")
+	var user model.User
+	collection := controller.session.DB(octifyDB).C(usersCollection)
+	username := c.URLParams[userPlaceholder]
+
+	if err := collection.Find(bson.M{"username": username}).One(&user); err != nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if err := collection.RemoveId(user.Id); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
 }

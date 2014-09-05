@@ -68,12 +68,7 @@ func (controller *Controller) RegisterUser(c web.C, w http.ResponseWriter, r *ht
 		w.Write([]byte("Bad Content"))
 	}
 
-<<<<<<< HEAD
-	collection := controller.session.DB(octifyDB).C(usersCollection)
-=======
-	collection := controller.Session.DB(octifyDB).C(usersCollection)
-	err = collection.Insert(&user)
->>>>>>> 61b34e241ce7d69db527a48c599af4498233be16
+	collection := controller.DB(octifyDB).C(usersCollection)
 
 	if err := collection.Insert(&user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -103,7 +98,7 @@ func (controller *Controller) RegisteredUser(c web.C, w http.ResponseWriter, r *
 // DELETE
 func (controller *Controller) UnregisterUser(c web.C, w http.ResponseWriter, r *http.Request) {
 	var user model.User
-	collection := controller.session.DB(octifyDB).C(usersCollection)
+	collection := controller.DB(octifyDB).C(usersCollection)
 	username := c.URLParams[userPlaceholder]
 
 	if err := collection.Find(bson.M{"username": username}).One(&user); err != nil {

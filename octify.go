@@ -23,8 +23,8 @@ func main() {
 	defer controller.Close()
 
 	goji.Post(userURLPath, controller.RegisterUser)
-	goji.Delete(userURLPath, controller.UnregisterUser)
 	goji.Get(userURLPath+userPlaceholder, controller.RegisteredUser)
+	goji.Delete(userURLPath+userPlaceholder, controller.UnregisterUser)
 
 	goji.Serve()
 }

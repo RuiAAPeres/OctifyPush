@@ -19,6 +19,7 @@ func main() {
 		log.Fatal(error)
 	}
 
+	controller.StartPush()
 	defer controller.Close()
 
 	goji.Post(userURLPath, controller.RegisterUser)

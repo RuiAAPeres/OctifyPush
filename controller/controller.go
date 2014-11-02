@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/ruiaaperes/octify/model"
 
@@ -55,6 +56,28 @@ func NewController() (*Controller, error) {
 	return &Controller{
 		Session: session,
 	}, nil
+}
+
+// Start Push
+
+func (controller *Controller) StartPush() {
+
+	ticketChannel := time.NewTicker(time.Second * 10).C
+
+	for {
+		select {
+		case <-ticketChannel:
+			collection := controller.Session.DB(octifyDB).C(usersCollection)
+			var allUsers []model.User
+			collection.Find(bson.M{}).All(&allUsers)
+
+			for _, element := range allUsers {
+				fmt.Printf(element.Username)
+				fmt.Printf("\n")
+			}
+
+		}
+	}
 }
 
 // HTTP Handlers

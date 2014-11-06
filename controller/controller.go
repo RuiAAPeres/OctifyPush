@@ -24,6 +24,7 @@ const (
 
 type Controller struct {
 	*mgo.Session
+	*Updater
 }
 
 func NewController() (*Controller, error) {
